@@ -1,13 +1,13 @@
-// 1. Initialize Cart & Language
+// 1. تهيئة السلة واللغة
 let cart = JSON.parse(localStorage.getItem('BELLA_KIDS_CART')) || [];
 let selectedSize = null; 
 
 /**
- * Default to 'ar' (Arabic) for new visitors
+ * اللغة الافتراضية 'ar' (العربية) للزوار الجدد
  */
 let currentLanguage = localStorage.getItem('BELLA_LANGUAGE') || 'ar';
 
-// Translation Dictionary
+// قاموس الترجمة المحدث
 const translations = {
     "en": {
         "delivery-bar": "✨ Fast Delivery within Ramallah & Surrounding Areas! ✨",
@@ -30,15 +30,15 @@ const translations = {
         "girls-cat-desc": "Dresses for every occasion.",
         "explore": "Explore",
         "new-arrivals": "New Arrivals",
-        "bag-btn": "Bag",
+        "basket-btn": "Basket", // تم التغيير من Bag
         "search-placeholder": "Search the collection...",
-        "empty-bag": "Your bag is empty",
+        "empty-basket": "Your Basket is empty", // تم التغيير من Bag
         "subtotal": "Subtotal:",
         "delivery-fee": "Delivery Charge:",
         "total": "Total:",
         "whatsapp-btn": "ORDER ON WHATSAPP",
         "select-size": "Select Size",
-        "add-to-bag": "Add to Bag",
+        "add-to-basket": "Add to Basket", // تم التغيير من Bag
         "no-search": "No items found matching your search",
         "alert-size": "Please select a size first!",
         "currency": "₪",
@@ -82,15 +82,15 @@ const translations = {
         "girls-cat-desc": "فساتين لكل المناسبات.",
         "explore": "اكتشف",
         "new-arrivals": "وصلنا حديثاً",
-        "bag-btn": "الحقيبة",
+        "basket-btn": "سلة التسوق", // تم التغيير من الحقيبة
         "search-placeholder": "ابحث في التشكيلة...",
-        "empty-bag": "حقيبتك فارغة",
+        "empty-basket": "سلة التسوق فارغة", // تم التغيير من الحقيبة
         "subtotal": "المجموع الفرعي:",
         "delivery-fee": "رسوم التوصيل:",
         "total": "المجموع:",
         "whatsapp-btn": "اطلب عبر واتساب",
         "select-size": "اختر المقاس",
-        "add-to-bag": "أضف إلى الحقيبة",
+        "add-to-basket": "أضف إلى السلة", // تم التغيير من الحقيبة
         "no-search": "لم يتم العثور على نتائج للبحث",
         "alert-size": "يرجى اختيار المقاس أولاً!",
         "currency": "₪",
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartUI();
 });
 
-// --- Translation Logic ---
+// --- منطق الترجمة ---
 function toggleLanguage() {
     currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
     localStorage.setItem('BELLA_LANGUAGE', currentLanguage);
@@ -154,7 +154,7 @@ function applyTranslations() {
     updateCartUI();
 }
 
-// Helper: Get category from page title
+// مساعد: الحصول على الفئة من عنوان الصفحة
 function getCurrentCategory() {
     const title = document.title.toLowerCase();
     if (title.includes("boys")) return 'boys';
@@ -163,7 +163,7 @@ function getCurrentCategory() {
     return null;
 }
 
-// 2. Render Products Logic
+// 2. منطق عرض المنتجات
 function renderProducts() {
     const currentCat = getCurrentCategory();
     const productsToDisplay = currentCat ? 
@@ -197,7 +197,7 @@ function renderProductsToGrid(productsToDisplay) {
                     <h5 class="fw-bold mb-1">${name}</h5>
                     <p class="fw-bold text-primary mb-3">${currency}${product.price.toFixed(2)}</p>
                     <button onclick="event.stopPropagation(); openProductDetails(${product.id})" class="btn btn-primary w-100 rounded-pill py-2">
-                        ${translations[currentLanguage]['bag-btn']}
+                        ${translations[currentLanguage]['basket-btn']}
                     </button>
                 </div>
             </div>
@@ -205,7 +205,7 @@ function renderProductsToGrid(productsToDisplay) {
     `}).join('');
 }
 
-// Search Filter Logic
+// منطق تصفية البحث
 function filterSearch() {
     const searchTerm = document.getElementById('productSearch').value.toLowerCase();
     const currentCat = getCurrentCategory();
@@ -224,7 +224,7 @@ function filterSearch() {
     renderProductsToGrid(filtered);
 }
 
-// 3. Popup & Size Logic
+// 3. منطق النافذة المنبثقة واختيار المقاس
 function selectSize(element, size) {
     document.querySelectorAll('#sizeSelector .btn').forEach(btn => {
         btn.classList.remove('btn-primary', 'text-white');
@@ -258,7 +258,7 @@ function openProductDetails(productId) {
 
     const sizeLabel = document.querySelector('[data-i18n-key="select-size"]');
     if(sizeLabel) sizeLabel.innerText = translations[currentLanguage]['select-size'];
-    document.getElementById('modalAddToCart').innerText = translations[currentLanguage]['add-to-bag'];
+    document.getElementById('modalAddToCart').innerText = translations[currentLanguage]['add-to-basket'];
 
     const modalBtn = document.getElementById('modalAddToCart');
     modalBtn.onclick = () => {
@@ -274,7 +274,7 @@ function openProductDetails(productId) {
     myModal.show();
 }
 
-// 4. Cart Logic & FLYING ITEM ANIMATION
+// 4. منطق السلة والرسوم المتحركة
 function addToCart(productId, size) {
     const product = products.find(p => p.id === productId);
     const existing = cart.find(item => item.id === productId && item.selectedSize === size);
@@ -337,20 +337,20 @@ function saveAndUpdate() {
     updateCartUI();
 }
 
-// 5. UI Updates - INCLUDES DELIVERY FEE ₪15.00
+// 5. تحديث واجهة المستخدم - تشمل رسوم التوصيل 15 شيكل
 function updateCartUI() {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     document.querySelectorAll('.cart-count').forEach(el => el.innerText = count);
 
     const cartItems = document.getElementById('cartItems');
     const cartTotal = document.getElementById('cartTotal');
-    const cartSubtotal = document.getElementById('cartSubtotal'); // If you keep this element
+    const cartSubtotal = document.getElementById('cartSubtotal');
     const currency = translations[currentLanguage]['currency'];
     const deliveryCharge = 15;
 
     if (cartItems) {
         if (cart.length === 0) {
-            cartItems.innerHTML = `<div class="text-center py-5 text-muted">${translations[currentLanguage]['empty-bag']}</div>`;
+            cartItems.innerHTML = `<div class="text-center py-5 text-muted">${translations[currentLanguage]['empty-basket']}</div>`;
             if (cartTotal) cartTotal.innerText = `${currency}0.00`;
             if (cartSubtotal) cartSubtotal.innerText = `${currency}0.00`;
         } else {
@@ -379,10 +379,10 @@ function updateCartUI() {
     }
 }
 
-// 6. WhatsApp Order - INCLUDES DELIVERY FEE ₪15.00
+// 6. طلب واتساب
 function sendToWhatsApp() {
     const isEn = currentLanguage === 'en';
-    if (cart.length === 0) return alert(translations[currentLanguage]['empty-bag']);
+    if (cart.length === 0) return alert(translations[currentLanguage]['empty-basket']);
     
     let message = isEn ? "*New Order from Bella Kids*\n\n" : "*طلب جديد من بيلا كيدز*\n\n";
     message += isEn ? "I would like to order the following items:\n\n" : "أود طلب القطع التالية:\n\n";
@@ -410,7 +410,7 @@ function sendToWhatsApp() {
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
 }
 
-// 7. Homepage Balloons
+// 7. بالونات الصفحة الرئيسية
 function createBalloons() {
     const container = document.createElement('div');
     container.id = 'balloon-container';
