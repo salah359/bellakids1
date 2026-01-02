@@ -3,11 +3,11 @@
 <head>
     <link rel="manifest" href="manifest.json">
 
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js');
-  }
-</script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+      }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Newborn Collection | Bella Kids</title>
@@ -76,6 +76,13 @@
         .input-group:focus-within {
             border-color: var(--bs-primary) !important;
         }
+
+        /* Carousel specific styles for alignment */
+        .carousel-item img {
+            height: 450px;
+            object-fit: contain;
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 <body>
@@ -105,7 +112,7 @@
                         EN / عربي
                     </button>
                     <button class="btn btn-primary rounded-pill px-4 position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar">
-                        <span data-i18n-key="bag-btn">Bag</span> <span class="badge cart-count ms-1">0</span>
+                        <span data-i18n-key="basket-btn">Basket</span> <span class="badge cart-count ms-1">0</span>
                     </button>
                 </div>
             </div>
@@ -149,15 +156,26 @@
             <div class="modal-content border-0 rounded-5 shadow-lg overflow-hidden">
                 <div class="modal-body p-0">
                     <div class="row g-0">
-                        <div class="col-md-6 bg-light text-center p-3">
-                            <img src="" id="popupImage" class="img-fluid h-100 object-fit-contain" style="max-height: 500px;">
+                        <div class="col-md-6 bg-light border-end">
+                            <div id="productCarousel" class="carousel slide h-100" data-bs-ride="carousel">
+                                <div class="carousel-inner h-100" id="carouselItems">
+                                    </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="col-md-6 p-5 d-flex flex-column justify-content-center">
+
+                        <div class="col-md-6 p-4 p-lg-5 d-flex flex-column justify-content-center">
                             <button type="button" class="btn-close ms-auto mb-3" data-bs-dismiss="modal"></button>
                             <h2 id="popupName" class="fw-bold text-dark mb-2"></h2>
                             <h4 id="popupPrice" class="text-primary fw-bold mb-3"></h4>
                             <hr>
                             <div id="popupDesc" class="text-muted mb-4"></div>
+                            
                             <div class="mb-4">
                                 <label class="form-label fw-bold small" data-i18n-key="select-size">Select Size</label>
                                 <div class="d-flex gap-2" id="sizeSelector">
@@ -166,7 +184,8 @@
                                     <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" onclick="selectSize(this, '6-12M')">6-12M</button>
                                 </div>
                             </div>
-                            <button id="modalAddToCart" class="btn btn-primary btn-lg rounded-pill w-100 shadow-sm py-3 fw-bold" data-i18n-key="add-to-bag">Add to Bag 🛍️</button>
+                            
+                            <button id="modalAddToCart" class="btn btn-primary btn-lg rounded-pill w-100 shadow-sm py-3 fw-bold" data-i18n-key="add-to-basket">Add to Basket 🛍️</button>
                         </div>
                     </div>
                 </div>
@@ -176,7 +195,7 @@
 
     <div class="offcanvas offcanvas-end border-0 shadow" tabindex="-1" id="cartSidebar">
         <div class="offcanvas-header border-bottom">
-            <h5 class="fw-bold m-0" data-i18n-key="bag-btn">Your Bag</h5>
+            <h5 class="fw-bold m-0" data-i18n-key="basket-btn">Your Basket</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body" id="cartItems"></div>
@@ -194,7 +213,7 @@
     </div>
 
     <button class="cart-float" data-bs-toggle="offcanvas" data-bs-target="#cartSidebar">
-        🛍️ <span class="badge cart-count">0</span>
+        🛍️ <span class="badge bg-white text-primary cart-count ms-1">0</span>
     </button>
 
     <a href="https://wa.me/972598439251" class="whatsapp-float" target="_blank">
@@ -248,5 +267,4 @@
         AOS.init({ duration: 1000, once: true });
     </script>
 </body>
-
 </html>
