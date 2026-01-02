@@ -7,7 +7,7 @@ let selectedSize = null;
  */
 let currentLanguage = localStorage.getItem('BELLA_LANGUAGE') || 'ar';
 
-// قاموس الترجمة المحدث
+// قاموس الترجمة المحدث (تم تغيير Bag إلى Basket)
 const translations = {
     "en": {
         "delivery-bar": "✨ Fast Delivery within Ramallah & Surrounding Areas! ✨",
@@ -30,26 +30,24 @@ const translations = {
         "girls-cat-desc": "Dresses for every occasion.",
         "explore": "Explore",
         "new-arrivals": "New Arrivals",
-        "basket-btn": "Basket", // تم التغيير من Bag
+        "basket-btn": "Basket", 
         "search-placeholder": "Search the collection...",
-        "empty-basket": "Your Basket is empty", // تم التغيير من Bag
+        "empty-basket": "Your Basket is empty", 
         "subtotal": "Subtotal:",
         "delivery-fee": "Delivery Charge:",
         "total": "Total:",
         "whatsapp-btn": "ORDER ON WHATSAPP",
         "select-size": "Select Size",
-        "add-to-basket": "Add to Basket", // تم التغيير من Bag
+        "add-to-basket": "Add to Basket", 
         "no-search": "No items found matching your search",
         "alert-size": "Please select a size first!",
         "currency": "₪",
-        // Footer
         "footer-desc": "Premium quality clothing for your little stars. Discover the magic of childhood fashion in Ramallah.",
         "footer-visit": "Visit Our Store",
         "footer-directions": "📍 Open in Google Maps",
         "footer-location": "Al-Bireh, Ramallah (W674+FX5)",
         "footer-connect": "Connect With Us",
         "footer-copy": "© 2025 Bella Kids. All rights reserved.",
-        // About
         "about-title": "Our Story.",
         "about-text-1": "Bella Kids was born in the heart of Ramallah with a simple mission: to provide children with clothes as magical as their imagination.",
         "about-text-2": "We believe that high-quality fashion should be accessible, comfortable, and durable enough for every adventure.",
@@ -82,26 +80,24 @@ const translations = {
         "girls-cat-desc": "فساتين لكل المناسبات.",
         "explore": "اكتشف",
         "new-arrivals": "وصلنا حديثاً",
-        "basket-btn": "سلة التسوق", // تم التغيير من الحقيبة
+        "basket-btn": "سلة التسوق", 
         "search-placeholder": "ابحث في التشكيلة...",
-        "empty-basket": "سلة التسوق فارغة", // تم التغيير من الحقيبة
+        "empty-basket": "سلة التسوق فارغة", 
         "subtotal": "المجموع الفرعي:",
         "delivery-fee": "رسوم التوصيل:",
         "total": "المجموع:",
         "whatsapp-btn": "اطلب عبر واتساب",
         "select-size": "اختر المقاس",
-        "add-to-basket": "أضف إلى السلة", // تم التغيير من الحقيبة
+        "add-to-basket": "أضف إلى السلة", 
         "no-search": "لم يتم العثور على نتائج للبحث",
         "alert-size": "يرجى اختيار المقاس أولاً!",
         "currency": "₪",
-        // Footer
         "footer-desc": "ملابس ذات جودة عالية لنجومكم الصغار. اكتشفوا سحر موضة الطفولة في قلب رام الله.",
         "footer-visit": "تفضلوا بزيارة متجرنا",
         "footer-directions": "📍 افتح في خرائط جوجل",
         "footer-location": "البيرة، رام الله (W674+FX5)",
         "footer-connect": "تواصلوا معنا",
         "footer-copy": "© 2025 بيلا كيدز. جميع الحقوق محفوظة.",
-        // About
         "about-title": "قصتنا.",
         "about-text-1": "ولدت بيلا كيدز في قلب رام الله بمهمة بسيطة: تزويد الأطفال بملابس ساحرة مثل خيالهم تماماً.",
         "about-text-2": "نحن نؤمن بأن الموضة عالية الجودة يجب أن تكون متاحة، مريحة، ومتينة بما يكفي لكل مغامرة.",
@@ -154,7 +150,6 @@ function applyTranslations() {
     updateCartUI();
 }
 
-// مساعد: الحصول على الفئة من عنوان الصفحة
 function getCurrentCategory() {
     const title = document.title.toLowerCase();
     if (title.includes("boys")) return 'boys';
@@ -192,7 +187,7 @@ function renderProductsToGrid(productsToDisplay) {
         return `
         <div class="col-md-4 col-6 mb-5" data-aos="fade-up">
             <div class="card product-card h-100 shadow-sm border-0 overflow-hidden" onclick="openProductDetails(${product.id})">
-                <img src="${product.image}" class="card-img-top img-hover-zoom" alt="${name}">
+                <img src="${product.images[0]}" class="card-img-top img-hover-zoom" alt="${name}">
                 <div class="card-body text-center p-3">
                     <h5 class="fw-bold mb-1">${name}</h5>
                     <p class="fw-bold text-primary mb-3">${currency}${product.price.toFixed(2)}</p>
@@ -205,7 +200,6 @@ function renderProductsToGrid(productsToDisplay) {
     `}).join('');
 }
 
-// منطق تصفية البحث
 function filterSearch() {
     const searchTerm = document.getElementById('productSearch').value.toLowerCase();
     const currentCat = getCurrentCategory();
@@ -216,15 +210,13 @@ function filterSearch() {
 
     const filtered = categoryProducts.filter(product => 
         (product.name_en && product.name_en.toLowerCase().includes(searchTerm)) || 
-        (product.name_ar && product.name_ar.toLowerCase().includes(searchTerm)) ||
-        (product.description_en && product.description_en.toLowerCase().includes(searchTerm)) ||
-        (product.description_ar && product.description_ar.toLowerCase().includes(searchTerm))
+        (product.name_ar && product.name_ar.toLowerCase().includes(searchTerm))
     );
 
     renderProductsToGrid(filtered);
 }
 
-// 3. منطق النافذة المنبثقة واختيار المقاس
+// 3. منطق النافذة المنبثقة والـ Carousel
 function selectSize(element, size) {
     document.querySelectorAll('#sizeSelector .btn').forEach(btn => {
         btn.classList.remove('btn-primary', 'text-white');
@@ -254,11 +246,16 @@ function openProductDetails(productId) {
     document.getElementById('popupName').innerText = name;
     document.getElementById('popupPrice').innerText = currency + product.price.toFixed(2);
     document.getElementById('popupDesc').innerText = desc;
-    document.getElementById('popupImage').src = product.image;
 
-    const sizeLabel = document.querySelector('[data-i18n-key="select-size"]');
-    if(sizeLabel) sizeLabel.innerText = translations[currentLanguage]['select-size'];
-    document.getElementById('modalAddToCart').innerText = translations[currentLanguage]['add-to-basket'];
+    // --- تحديث الـ Carousel ديناميكياً ---
+    const carouselInner = document.getElementById('carouselItems');
+    if (carouselInner) {
+        carouselInner.innerHTML = product.images.map((imgSrc, index) => `
+            <div class="carousel-item ${index === 0 ? 'active' : ''}">
+                <img src="${imgSrc}" class="d-block w-100 object-fit-contain" style="height: 400px;">
+            </div>
+        `).join('');
+    }
 
     const modalBtn = document.getElementById('modalAddToCart');
     modalBtn.onclick = () => {
@@ -274,7 +271,7 @@ function openProductDetails(productId) {
     myModal.show();
 }
 
-// 4. منطق السلة والرسوم المتحركة
+// 4. منطق السلة
 function addToCart(productId, size) {
     const product = products.find(p => p.id === productId);
     const existing = cart.find(item => item.id === productId && item.selectedSize === size);
@@ -285,7 +282,7 @@ function addToCart(productId, size) {
         cart.push({ ...product, selectedSize: size, quantity: 1 });
     }
 
-    runFlyToCartAnimation(product.image);
+    runFlyToCartAnimation(product.images[0]);
     saveAndUpdate();
 }
 
@@ -337,7 +334,6 @@ function saveAndUpdate() {
     updateCartUI();
 }
 
-// 5. تحديث واجهة المستخدم - تشمل رسوم التوصيل 15 شيكل
 function updateCartUI() {
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     document.querySelectorAll('.cart-count').forEach(el => el.innerText = count);
@@ -358,7 +354,7 @@ function updateCartUI() {
                 const name = currentLanguage === 'ar' ? item.name_ar : item.name_en;
                 return `
                 <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
-                    <img src="${item.image}" width="60" height="60" class="rounded shadow-sm object-fit-cover">
+                    <img src="${item.images[0]}" width="60" height="60" class="rounded shadow-sm object-fit-cover">
                     <div class="${currentLanguage === 'ar' ? 'me-3' : 'ms-3'} flex-grow-1">
                         <h6 class="mb-0 fw-bold small">${name}</h6>
                         <div class="d-flex gap-2 align-items-center">
@@ -379,14 +375,11 @@ function updateCartUI() {
     }
 }
 
-// 6. طلب واتساب
 function sendToWhatsApp() {
     const isEn = currentLanguage === 'en';
     if (cart.length === 0) return alert(translations[currentLanguage]['empty-basket']);
     
     let message = isEn ? "*New Order from Bella Kids*\n\n" : "*طلب جديد من بيلا كيدز*\n\n";
-    message += isEn ? "I would like to order the following items:\n\n" : "أود طلب القطع التالية:\n\n";
-
     const currency = translations[currentLanguage]['currency'];
     const deliveryCharge = 15;
 
@@ -404,38 +397,25 @@ function sendToWhatsApp() {
     message += isEn ? `Items Total: ${currency}${itemsSum.toFixed(2)}\n` : `مجموع القطع: ${currency}${itemsSum.toFixed(2)}\n`;
     message += isEn ? `Delivery: ${currency}${deliveryCharge.toFixed(2)}\n` : `التوصيل: ${currency}${deliveryCharge.toFixed(2)}\n`;
     message += `*${translations[currentLanguage]['total']} ${currency}${total.toFixed(2)}*\n\n`;
-    message += isEn ? "Please let me know the delivery details." : "يرجى إعلامي بتفاصيل التوصيل.";
     
     const phoneNumber = "972598439251"; 
     window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
 }
 
-// 7. بالونات الصفحة الرئيسية
 function createBalloons() {
     const container = document.createElement('div');
     container.id = 'balloon-container';
     document.body.appendChild(container);
-
     const colors = ['#A2D2FF', '#FFC8DD', '#FFAFCC', '#BDE0FE', '#CDB4DB'];
-
     for (let i = 0; i < 15; i++) {
         const balloon = document.createElement('div');
         balloon.className = 'balloon';
-        
         const color = colors[Math.floor(Math.random() * colors.length)];
-        const left = Math.floor(Math.random() * 90); 
-        const duration = (5 + Math.random() * 5);     
-        const delay = Math.random() * 3;            
-
         balloon.style.backgroundColor = color;
-        balloon.style.left = left + '%';
-        balloon.style.animationDuration = duration + 's';
-        balloon.style.animationDelay = delay + 's';
-
+        balloon.style.left = Math.floor(Math.random() * 90) + '%';
+        balloon.style.animationDuration = (5 + Math.random() * 5) + 's';
+        balloon.style.animationDelay = Math.random() * 3 + 's';
         container.appendChild(balloon);
     }
-
-    setTimeout(() => {
-        if (container) container.remove();
-    }, 15000);
+    setTimeout(() => { if (container) container.remove(); }, 15000);
 }
