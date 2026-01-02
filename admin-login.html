@@ -19,7 +19,7 @@
         </div>
     </div>
     <script>
-        const supabase = supabase.createClient('YOUR_URL', 'YOUR_KEY');
+        const supabase = supabase.createClient('https://zqtycfsezhmuuhgctouh.supabase.co', 'sb_publishable_mQqF_12aj19_27hHSsCi4w_hsOKfCq5');
         document.getElementById('loginForm').onsubmit = async (e) => {
             e.preventDefault();
             const { error } = await supabase.auth.signInWithPassword({
@@ -31,4 +31,5 @@
         };
     </script>
 </body>
+
 </html>
