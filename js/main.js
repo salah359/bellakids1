@@ -1,13 +1,17 @@
-// 1. تهيئة السلة واللغة
+// 1. Initialize Cart, Language, and Supabase
 let cart = JSON.parse(localStorage.getItem('BELLA_KIDS_CART')) || [];
 let selectedSize = null; 
 
 /**
- * اللغة الافتراضية 'ar' (العربية) للزوار الجدد
+ * Default language 'ar' (Arabic) for new visitors
  */
 let currentLanguage = localStorage.getItem('BELLA_LANGUAGE') || 'ar';
 
-// قاموس الترجمة المحدث (تم تغيير Bag إلى Basket)
+// Initialize Supabase Client (Ensure these match your credentials provided)
+const SUPABASE_URL = 'https://zqtycfsezhmuuhgctouh.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_mQqF_12aj19_27hHSsCi4w_hsOKfCq5';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const translations = {
     "en": {
         "delivery-bar": "✨ Fast Delivery within Ramallah & Surrounding Areas! ✨",
@@ -119,11 +123,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     applyTranslations();
-    renderProducts();
+    renderProducts(); // This is now async internally
     updateCartUI();
 });
 
-// --- منطق الترجمة ---
+// --- Translation Logic ---
 function toggleLanguage() {
     currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
     localStorage.setItem('BELLA_LANGUAGE', currentLanguage);
@@ -158,12 +162,24 @@ function getCurrentCategory() {
     return null;
 }
 
-// 2. منطق عرض المنتجات
-function renderProducts() {
+// 2. Fetch and Render Products from Database
+async function renderProducts() {
     const currentCat = getCurrentCategory();
+    
+    // Fetch live products from Supabase
+    let { data: liveProducts, error } = await supabase
+        .from('products')
+        .select('*');
+
+    if (error) {
+        console.error("Error loading products:", error);
+        return;
+    }
+
     const productsToDisplay = currentCat ? 
-        products.filter(p => p.category.includes(currentCat)) : 
-        products;
+        liveProducts.filter(p => p.category.includes(currentCat)) : 
+        liveProducts;
+        
     renderProductsToGrid(productsToDisplay);
 }
 
@@ -200,8 +216,11 @@ function renderProductsToGrid(productsToDisplay) {
     `}).join('');
 }
 
-function filterSearch() {
+async function filterSearch() {
     const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+    
+    // Fetch live data for filtering
+    let { data: products } = await supabase.from('products').select('*');
     const currentCat = getCurrentCategory();
     
     const categoryProducts = currentCat ? 
@@ -216,7 +235,7 @@ function filterSearch() {
     renderProductsToGrid(filtered);
 }
 
-// 3. منطق النافذة المنبثقة والـ Carousel
+// 3. Modal & Dynamic Carousel
 function selectSize(element, size) {
     document.querySelectorAll('#sizeSelector .btn').forEach(btn => {
         btn.classList.remove('btn-primary', 'text-white');
@@ -229,9 +248,15 @@ function selectSize(element, size) {
     selectedSize = size;
 }
 
-function openProductDetails(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
+async function openProductDetails(productId) {
+    // Fetch specific product by ID
+    let { data: product, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', productId)
+        .single();
+
+    if (error || !product) return;
 
     selectedSize = null; 
     document.querySelectorAll('#sizeSelector .btn').forEach(btn => {
@@ -247,7 +272,16 @@ function openProductDetails(productId) {
     document.getElementById('popupPrice').innerText = currency + product.price.toFixed(2);
     document.getElementById('popupDesc').innerText = desc;
 
-    // --- تحديث الـ Carousel ديناميكياً ---
+    // Build Sizes Dynamically from Database
+    const sizeSelector = document.getElementById('sizeSelector');
+    if (sizeSelector) {
+        sizeSelector.innerHTML = product.sizes.map(size => `
+            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" 
+                    onclick="selectSize(this, '${size}')">${size}</button>
+        `).join('');
+    }
+
+    // Build Carousel Dynamically (supports up to 3 images)
     const carouselInner = document.getElementById('carouselItems');
     if (carouselInner) {
         carouselInner.innerHTML = product.images.map((imgSrc, index) => `
@@ -263,7 +297,7 @@ function openProductDetails(productId) {
             alert(translations[currentLanguage]['alert-size']);
             return;
         }
-        addToCart(product.id, selectedSize);
+        addToCart(product, selectedSize);
         bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
     };
 
@@ -271,10 +305,9 @@ function openProductDetails(productId) {
     myModal.show();
 }
 
-// 4. منطق السلة
-function addToCart(productId, size) {
-    const product = products.find(p => p.id === productId);
-    const existing = cart.find(item => item.id === productId && item.selectedSize === size);
+// 4. Cart Logic
+function addToCart(product, size) {
+    const existing = cart.find(item => item.id === product.id && item.selectedSize === size);
 
     if (existing) {
         existing.quantity += 1;
